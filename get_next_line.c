@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 10
+#define BUFFER_SIZE 0
 #endif
 
 #include <stdlib.h>
@@ -36,9 +36,10 @@ void append(struct Node* head, char *str)
 	if (new_node == NULL)
 		return;
 	current_node = head;
-	while (current_node->next != NULL)
+	while (current_node->next != NULL) {
 		current_node = current_node->next;
-	new_node->data = str;
+	}
+	new_node->data = ft_strdup(str);
 	new_node->next = NULL;
 	current_node->next = new_node;
 }
@@ -60,31 +61,38 @@ char	*mem_alloc(struct Node *head)
 		current_node = current_node->next;
 	}
 	i = 0;
-	while(current_node->data[i] != '\n' && current_node->data[i])
+	while(current_node->data[i] != '\n' && current_node->data[i]) {
 		i++;
+	}
 	len = len + i;
-	new_line = (char *)malloc((len + 1) * sizeof(char));
+	new_line = (char *)malloc((len + 2) * sizeof(char));
 	if (new_line == NULL)
 		return (NULL);
 	return (new_line);
 }
 /*next line string creation*/
-char	*create_line(struct Node *list)
+char	*create_line(struct Node **list)
 {
 	char	*new_line;
 	struct Node	*current_node;
-	struct Node	*tmp;
 	int	i;
 	int	j;
 	struct Node	*new_node;
+	struct Node	*tmp;
+	if ((*list) == NULL) {
+		return NULL;
+	}
 	i = 0;
-       	new_line = mem_alloc(list);
-	current_node = list;
+       	new_line = mem_alloc(*list);
+	current_node = *list;
 	while (current_node->next)
 	{
 		ft_memcpy(new_line + i, current_node->data, ft_strlen(current_node->data));
 		i += ft_strlen(current_node->data);
+		tmp = current_node;
 		current_node = current_node->next;
+		free(tmp->data);
+		free(tmp);
 	}
 	j = 0;
 	while(current_node->data[j] && current_node->data[j] != '\n')
@@ -93,46 +101,43 @@ char	*create_line(struct Node *list)
 		j++;
 		i++;
 	}
+	if (current_node->data[j] == '\n') {
+		new_line[i] = '\n';
+		i++;
+	}
 	new_line[i] = '\0';
-	new_node = (struct Node*)malloc(sizeof(struct Node));
-	if (new_node == NULL)
-		return (NULL);
-	new_node->data = ft_strdup(current_node->data + j + 1);
-	new_node->next = NULL;
+	if (current_node->data[j]) {
+		new_node = (struct Node*)malloc(sizeof(struct Node));
+		if (new_node == NULL)
+			return (NULL);
+		new_node->data = ft_strdup(current_node->data + j + 1);
+		new_node->next = NULL;
+		*list = new_node;
+	}
+	else 
+	{
+		*list = NULL;
+	}
 	free(current_node->data);
 	free(current_node);
 
-	*list = *new_node;
 	
 	return (new_line);
 }
 
-int any_node_has_newline(struct Node* list)
+int last_node_has_newline(struct Node* list)
 {
 	struct Node	*current;
-	char	*res;
 	current = list;
 	if (!current)
 	{
 		return 0;
 	}
-	res = ft_strchr(current->data, '\n');
-	if (!res)
-	{
-		return 0;
-	}
-	//printf("current %p\n", current);
-	//printf("current data %s\n", current->data);
 	while (current->next)
 	{
-		res = ft_strchr(current->data, '\n');
-		if (!res)
-		{
-			return 0;
-		}
 		current = current->next;	
 	}
-	return 1;
+	return ft_strchr(current->data, '\n') != NULL;
 }
 
 char	*get_next_line(int fd)
@@ -141,21 +146,15 @@ char	*get_next_line(int fd)
 	int		num_chars;
 	static struct Node	*list;
 
-	struct Node *current_node = list;
-    	while (current_node != NULL) 
-	{
-        	struct Node *temp = current_node;
-        	current_node = current_node->next;
-        	free(temp->data);
-        	free(temp);
-    	}
-    list = NULL;
-	if (!any_node_has_newline(list)) 
+	if (!last_node_has_newline(list)) 
 	{
 		buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
 		if (buffer == NULL)
 			return (NULL);
 		num_chars = read(fd, buffer, BUFFER_SIZE);
+		if (!num_chars) {
+			return create_line(&list);
+		}
 		buffer[num_chars] = '\0';
 		if (!list)
 		{
@@ -165,7 +164,8 @@ char	*get_next_line(int fd)
 				free(buffer);
 				return (NULL);
 			}
-			list->data =ft_strdup(buffer);
+			list->data = ft_strdup(buffer);
+			free(buffer);
 			list->next = NULL;
 		}
 		else
@@ -175,9 +175,13 @@ char	*get_next_line(int fd)
 		while (!ft_strchr(buffer, '\n'))
 		{
 			num_chars = read(fd, buffer, BUFFER_SIZE);
+			if (!num_chars) {
+				free(buffer);
+				return (create_line(&list));
+			}
 			buffer[num_chars] = '\0';
 			append(list, buffer);
 		}
 	}
-	return (create_line(list));
+	return (create_line(&list));
 }

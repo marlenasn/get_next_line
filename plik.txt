@@ -1,2 +1,5 @@
+abc
+def
 duzy buffor potrzebny bardzo bardzo potrzeny jest
+
 

@@ -22,12 +22,19 @@
 int main() {
 	int fd;
 	char* s;
-	fd = open("plik.txt", O_RDONLY);
-	s = get_next_line(fd);
-	printf("%s\n", s);
-	s = get_next_line(fd);
-	printf("%s\n", s);
-	s = get_next_line(fd);
-	printf("%s\n", s);
+	fd = open("plik2.txt", O_RDONLY);
+	while (1) {
+		s = get_next_line(fd);
+		if (!s) {
+			return 0;
+		}
+		printf("%s", s);
+	}
+	// s = get_next_line(fd);
+	// printf("%s", s);
+	// s = get_next_line(fd);
+	// printf("%s\n", s);
+	// s = get_next_line(fd);
+	//printf("%s\n", s);
 	return 0;
 }
