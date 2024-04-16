@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 0
+#define BUFFER_SIZE 1
 #endif
 
 #include <stdlib.h>
@@ -145,17 +145,27 @@ char	*get_next_line(int fd)
 	char		*buffer;
 	int		num_chars;
 	static struct Node	*list;
+	if (fd == -1) {
+		return NULL;
+	}
 
 	if (!last_node_has_newline(list)) 
 	{
-		buffer = (char *)malloc((BUFFER_SIZE + 1) * sizeof(char));
-		if (buffer == NULL)
+		buffer = (char *)malloc((BUFFER_SIZE) * sizeof(char));
+		if (buffer == NULL) {
+			free(list);
 			return (NULL);
+		}
 		num_chars = read(fd, buffer, BUFFER_SIZE);
 		if (!num_chars) {
+			free(buffer);
 			return create_line(&list);
 		}
-		buffer[num_chars] = '\0';
+		char * buf2;
+		buf2 = (char*)malloc(num_chars + 1);
+		ft_memcpy(buf2, buffer, num_chars);
+		buf2[num_chars] = '\0';
+
 		if (!list)
 		{
 			list = (struct Node*)malloc(sizeof(struct Node));
@@ -164,24 +174,29 @@ char	*get_next_line(int fd)
 				free(buffer);
 				return (NULL);
 			}
-			list->data = ft_strdup(buffer);
-			free(buffer);
+			list->data = ft_strdup(buf2);
 			list->next = NULL;
 		}
 		else
 		{
-			append(list, buffer);
+			append(list, buf2);
 		}
-		while (!ft_strchr(buffer, '\n'))
+		while (!ft_strchr(buf2, '\n'))
 		{
+			free(buf2);
 			num_chars = read(fd, buffer, BUFFER_SIZE);
+			buf2 = (char*)malloc(num_chars + 1);
+			ft_memcpy(buf2, buffer, num_chars);
+			buf2[num_chars] = '\0';
 			if (!num_chars) {
 				free(buffer);
+				free(buf2);
 				return (create_line(&list));
 			}
-			buffer[num_chars] = '\0';
-			append(list, buffer);
+			append(list, buf2);
 		}
+		free(buf2);
+		free(buffer);
 	}
 	return (create_line(&list));
 }
