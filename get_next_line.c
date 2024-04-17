@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef BUFFER_SIZE
-#define BUFFER_SIZE 1
+#define BUFFER_SIZE 100
 #endif
 
 #include <stdlib.h>
@@ -157,7 +157,7 @@ char	*get_next_line(int fd)
 			return (NULL);
 		}
 		num_chars = read(fd, buffer, BUFFER_SIZE);
-		if (!num_chars) {
+		if (num_chars <= 0) {
 			free(buffer);
 			return create_line(&list);
 		}
