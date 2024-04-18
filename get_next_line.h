@@ -21,3 +21,11 @@ char	*ft_strdup(const char *s1);
 char	*ft_strchr(const char *s, int c);
 
 char	*get_next_line(int fd);
+
+struct Node
+{
+	char *data;
+	struct Node* next;
+};
+
+struct Node* append(struct Node* head, char* str);

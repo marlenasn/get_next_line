@@ -12,6 +12,8 @@
 
 #include <unistd.h>
 #include <stdlib.h>
+#include "get_next_line.h"
+
 
 void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
@@ -57,39 +59,23 @@ size_t	ft_strlen(const char *str)
 	return (i);
 }
 
-size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
+/* I add new node to the existing list */
+struct Node* append(struct Node* head, char *str)
 {
-	size_t	src_len;
-	size_t	i;
+	struct Node	*new_node;
+	struct Node	*current_node;
 
-	i = 0;
-	src_len = 0;
-	while (src[src_len])
-		src_len++;
-	if (!dstsize) {
-		return (src_len);
-	}
-	while ((i < dstsize - 1) && src[i])
-	{
-		dst[i] = src[i];
-		i++;
-	}
-	dst[i] = '\0';
-	return (src_len);
-}
-
-
-char	*ft_strdup(const char *s1)
-{
-	char	*p;
-	int		len;
-
-	len = ft_strlen((char *)s1);
-	p = (char *)malloc(len + 1);
-	if (!p)
+	new_node = (struct Node*)malloc(sizeof(struct Node));
+	if (new_node == NULL) 
 		return (NULL);
-	ft_strlcpy(p, s1, len + 1);
-	return (p);
+	new_node->data = (char*)malloc(ft_strlen(str) + 1);
+	ft_memcpy(new_node->data, str, ft_strlen(str) + 1);
+	new_node->next = NULL;
+	if (head == NULL)
+		return (new_node);
+	current_node = head;
+	while (current_node->next != NULL)
+		current_node = current_node->next;
+	current_node->next = new_node;
+	return (head);
 }
-
-
