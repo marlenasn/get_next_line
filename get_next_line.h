@@ -6,26 +6,23 @@
 /*   By: mwiecek <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 12:41:46 by mwiecek           #+#    #+#             */
-/*   Updated: 2024/04/15 12:41:50 by mwiecek          ###   ########.fr       */
+/*   Updated: 2024/04/19 15:36:58 by mwiecek          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdlib.h>
 #include <unistd.h>
+#include <stdio.h>
 
-size_t	ft_strlen(const char *str);
-
-void	*ft_memcpy(void *dst, const void *src, size_t n);
-
-char	*ft_strdup(const char *s1);
-
-char	*ft_strchr(const char *s, int c);
-
-char	*get_next_line(int fd);
-
-struct Node
+struct	s_Node
 {
-	char *data;
-	struct Node* next;
+	struct s_Node	*next;
+	char			*data;
 };
 
-struct Node* append(struct Node* head, char* str);
+size_t			ft_strlen(const char *str);
+void			*ft_memcpy(void *dst, const void *src, size_t n);
+char			*ft_strdup(const char *s1);
+char			*ft_strchr(const char *s, int c);
+struct s_Node	*append(struct s_Node *head, char *str);
+char			*get_next_line(int fd);

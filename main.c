@@ -22,7 +22,7 @@
 int main() {
 	int fd;
 	char* s;
-	fd = open("plik2.txt", O_RDONLY);
+	fd = open("plik.txt", O_RDONLY);
 	while (1) {
 		s = get_next_line(fd);
 		if (!s) {

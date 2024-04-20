@@ -6,18 +6,15 @@
 /*   By: mwiecek <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 12:41:57 by mwiecek           #+#    #+#             */
-/*   Updated: 2024/04/15 12:42:00 by mwiecek          ###   ########.fr       */
+/*   Updated: 2024/04/19 15:24:25 by mwiecek          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
-#include <stdlib.h>
 #include "get_next_line.h"
-
 
 void	*ft_memcpy(void *dst, const void *src, size_t n)
 {
-	size_t i;
+	size_t	i;
 
 	if (!dst && !src)
 		return (0);
@@ -60,15 +57,15 @@ size_t	ft_strlen(const char *str)
 }
 
 /* I add new node to the existing list */
-struct Node* append(struct Node* head, char *str)
+struct s_Node	*append(struct s_Node *head, char *str)
 {
-	struct Node	*new_node;
-	struct Node	*current_node;
+	struct s_Node	*new_node;
+	struct s_Node	*current_node;
 
-	new_node = (struct Node*)malloc(sizeof(struct Node));
-	if (new_node == NULL) 
+	new_node = (struct s_Node *)malloc(sizeof(struct s_Node));
+	if (new_node == NULL)
 		return (NULL);
-	new_node->data = (char*)malloc(ft_strlen(str) + 1);
+	new_node->data = (char *)malloc(ft_strlen(str) + 1);
 	ft_memcpy(new_node->data, str, ft_strlen(str) + 1);
 	new_node->next = NULL;
 	if (head == NULL)
